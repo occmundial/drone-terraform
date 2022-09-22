@@ -7,13 +7,6 @@ workspace:
   path: src/github.com/drone-plugins/drone-terraform
 
 steps:
-  - name: test
-    image: golang:1.9
-    environment:
-      CGO_ENABLED: "0"
-    commands:
-      - go test -cover -coverprofile=coverage.out
-      - go build -ldflags "-s -w -X main.revision=$(git rev-parse HEAD)" -a
   - name: build
     image: plugins/docker
     settings:
