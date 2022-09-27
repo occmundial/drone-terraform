@@ -1,12 +1,29 @@
+kind: pipeline 
+name: drone-terraform
+type: docker
+
 workspace:
   base: /go
   path: src/github.com/drone-plugins/drone-terraform
 
-pipeline:
-  test:
-    image: golang:1.9
-    environment:
-      - CGO_ENABLED=0
-    commands:
-      - go test -cover -coverprofile=coverage.out
-      - go build -ldflags "-s -w -X main.revision=$(git rev-parse HEAD)" -a
+steps:
+  - name: build
+    image: plugins/docker
+    settings:
+      repo: occmundial/drone-terraform
+      tags: ${DRONE_COMMIT_SHA:0:8}
+      username:
+        from_secret: docker_devops_user
+      password:
+        from_secret: docker_devops_password
+      dockerfile: Dockerfile
+      build_args:
+        - terraform_version=1.3.0
+      
+trigger:
+  branch:
+    - master
+    - upgrade-1.3.0
+  event: 
+    - push
+
